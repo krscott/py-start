@@ -1,7 +1,7 @@
 import argparse
-from dataclasses import dataclass
 import logging
 import os
+from dataclasses import dataclass
 from typing import Any
 
 from py_start.lib import greet
