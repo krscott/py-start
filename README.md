@@ -16,7 +16,7 @@ Update dependencies
 nix flake update
 ```
 
-Requires CMake and a C11 compiler. A nix dev shell is available:
+Start nix dev shell
 ```
 nix develop
 ```
