@@ -1,0 +1,21 @@
+[project]
+name = "py-start"
+version = "0.1.0"
+requires-python = ">=3.10.12"
+
+dependencies = [
+    "mypy~=1.9",
+]
+
+[project.scripts]
+pystart = "py_start.__main__:main"
+
+[build-system]
+requires = ["setuptools >= 61.2"]
+build-backend = "setuptools.build_meta"
+
+# [tool.setuptools.package-data]
+# # Non-py files to include in package
+# "*" = [
+#     "*.txt",
+# ]
