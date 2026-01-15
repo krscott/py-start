@@ -31,7 +31,7 @@
           [
             black
             isort
-            pytest
+            python3.pkgs.pytest
             python3.pkgs.venvShellHook
             shfmt
           ]
