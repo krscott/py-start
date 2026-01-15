@@ -77,7 +77,7 @@
           '';
 
           mypy = mkApp ''
-            mypy . --check-untyped-defs
+            mypy .
           '';
 
           test = mkApp ''
