@@ -79,6 +79,11 @@
           mypy = mkApp ''
             mypy .
           '';
+
+          test = mkApp ''
+            export PYTHONPATH="''${PYTHONPATH:-}:."
+            pytest
+          '';
         };
 
         formatter = pkgs.nixfmt;
