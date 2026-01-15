@@ -81,8 +81,7 @@
           '';
 
           test = mkApp ''
-            export PYTHONPATH="''${PYTHONPATH:-}:."
-            pytest
+            ./pytest.sh
           '';
         };
 
