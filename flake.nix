@@ -31,6 +31,7 @@
           [
             black
             isort
+            mypy
             python3.pkgs.pytest
             python3.pkgs.venvShellHook
             shfmt
@@ -73,6 +74,10 @@
         apps = {
           format = mkApp ''
             ./format.sh
+          '';
+
+          mypy = mkApp ''
+            mypy .
           '';
         };
 

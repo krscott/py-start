@@ -1,4 +1,4 @@
-name: CMake on multiple platforms
+name: Checks
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  format:
+  checks:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,3 +20,6 @@ jobs:
       run: |
         nix run -L .#format
         git diff --exit-code
+
+    - name: Check Mypy
+      run: nix run -L .#mypy
