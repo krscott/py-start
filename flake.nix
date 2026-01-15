@@ -29,10 +29,11 @@
         devPkgs =
           with pkgs;
           [
-            shfmt
             black
             isort
+            pytest
             python3.pkgs.venvShellHook
+            shfmt
           ]
           ++ py-start.buildInputs;
 
