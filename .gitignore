@@ -1,5 +1,7 @@
 .direnv/
 .envrc
+.mypy_cache/
+.pytest_cache/
 .venv/
 .vscode/
 build/
