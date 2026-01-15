@@ -15,6 +15,10 @@ This repository is a Python project managed with **Nix**. All development action
 
 ## 1. Environment & Dependencies
 
+### Template
+
+This was derived from a template. Please remove template example code ("greet", etc).
+
 ### Nix Setup
 *   **Nix Flake**: The project uses `flake.nix` to pin dependencies (Python 3.10+, pytest, black, isort, mypy).
 *   **Dev Shell**: Run `nix develop` to enter a shell with all dependencies available in your `PATH`.
@@ -27,6 +31,72 @@ This repository is a Python project managed with **Nix**. All development action
     *   `optional-dependencies.dev`: Development tools (pytest, isort, black)
 *   **System/Dev Tools**: Defined in `flake.nix` under `devPkgs`
 *   **Python Version**: `>=3.10.12` (specified in `pyproject.toml`)
+
+### Adding Python Dependencies
+When adding new Python dependencies to the project, you need to update both the `pyproject.toml` file and the `default.nix` file to ensure consistency across all environments:
+
+1. **Update `pyproject.toml`**:
+   * For runtime dependencies, add to the `dependencies` list:
+     ```toml
+     dependencies = [
+         "mypy~=1.9",
+         "new-package~=1.0",  # Add your dependency here with version constraint
+     ]
+     ```
+   * For development-only dependencies, add to the `project.optional-dependencies.dev` list:
+     ```toml
+     [project.optional-dependencies]
+     dev = [
+         "pytest",
+         "isort",
+         "black",
+         "dev-package~=2.0",  # Add your dev dependency here
+     ]
+     ```
+
+2. **Update `default.nix`**:
+   * For runtime dependencies, add to the `propagatedBuildInputs` list:
+     ```nix
+     propagatedBuildInputs = [
+       mypy
+       new-package  # Add the Nix package name here
+     ];
+     ```
+
+3. **Update `flake.nix` (if needed)**:
+   * For development tools and system dependencies, add to the `devPkgs` list:
+     ```nix
+     devPkgs =
+       with pkgs;
+       [
+         black
+         isort
+         mypy
+         python3.pkgs.pytest
+         python3.pkgs.venvShellHook
+         new-dev-tool  # Add new development tool here
+       ]
+       ++ py-start.buildInputs;
+     ```
+
+4. **Using the updated dependencies**:
+   * Run `nix develop` to enter a shell with the updated dependencies
+   * Or run `pip install -e '.[dev]'` to update an existing environment
+
+5. **Verifying the dependency installation**:
+   * Inside a development shell, use `pip list` to verify the package is available
+   * Import the package in your code and run a simple test
+
+**Important Notes**:
+* Always prefer to use a specific version constraint in `pyproject.toml` (e.g., `~=1.0` or `>=1.0,<2.0`)
+* Ensure the package name in `default.nix` matches the Nix package name (may differ from PyPI name)
+* After adding dependencies, verify that the project still builds correctly with `nix build`
+
+**Common Issues with Dependencies**:
+* **Package not found in Nixpkgs**: If a Python package isn't available in Nixpkgs, you may need to create a custom package or use `buildPythonPackage` in your flake.nix
+* **Version mismatch**: Ensure that the version constraints in pyproject.toml are compatible with the versions available in Nixpkgs
+* **Missing type stubs**: For packages that lack type annotations, try adding the corresponding `types-<package>`, or if this doesn't exist, create a stub file with the needed types
+* **Import errors after adding dependencies**: Make sure to update your venv (`pip install -e '.[dev]'`) to pick up the new dependencies
 
 ## 2. Build, Test, and Lint Commands
 
