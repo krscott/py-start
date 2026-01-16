@@ -69,6 +69,8 @@
               pip install -e '.[dev]'
             '';
             shellHook = ''
+              venvShellHook
+
               # pytest support
               export PYTHONPATH="''${PYTHONPATH:-}:."
             '';
