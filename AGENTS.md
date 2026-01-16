@@ -286,18 +286,24 @@ def greet(name: str) -> None:
 
 ## 4. Project Structure
 
+Update this section as needed.
+
 ```
 py-start/
-├── py_start/           # Main package
-│   ├── __init__.py     # Package initialization
-│   ├── __main__.py     # CLI entry point (pystart command)
-│   └── lib.py          # Core functionality
-├── tests/              # Test files
-│   └── test_lib.py     # Tests for lib.py
-├── flake.nix           # Nix dependencies and build config
-├── pyproject.toml      # Python project metadata and dependencies
-├── format.sh           # Formatting script
-└── pytest.sh           # Test runner script
+├── py_start/              # Main package
+│   ├── __init__.py        # Package initialization
+│   ├── __main__.py        # CLI entry point (pystart command)
+│   └── lib.py             # Core functionality
+├── tests/                 # Test files
+│   └── test_lib.py        # Tests for lib.py
+├── flake.nix              # Nix dependencies and build config
+├── default.nix            # Nix package definition
+├── mypy.ini               # Mypy type checking configuration
+├── pyproject.toml         # Python project metadata and dependencies
+├── format.sh              # Formatting script
+├── AGENTS.md              # This file - agent guidelines
+├── CLAUDE.md              # Claude Code integration config
+└── README.md              # Project documentation
 ```
 
 ## 5. Workflow for Agents
