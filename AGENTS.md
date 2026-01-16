@@ -1,29 +1,36 @@
 # Agent Guide for py-start
 
-This repository is a Python project managed with **Nix**. All development actions (building, testing, formatting) should ideally be performed within the Nix environment to ensure reproducibility.
+This repository is a Python project managed with **Nix**. All development 
+actions (building, testing, formatting) should ideally be performed within the 
+Nix environment to ensure reproducibility.
+
+This doc assumes the dev environment is already active.
 
 ## Quick Reference
 
-| Action | Command | Alternative |
-|--------|---------|-------------|
-| Format code | `./format.sh` | `nix run .#format` |
-| Type check | `mypy .` | `nix run .#mypy` |
-| Run all tests | `./pytest.sh` or `pytest` | `nix run .#test` |
-| Run single test | `pytest tests/test_file.py::test_name` | - |
-| Run tests verbose | `pytest -v` | - |
-| Enter dev shell | `nix develop` | - |
+| Action | Command |
+|--------|---------|
+| Format code | `./format.sh` |
+| Type check | `mypy .` |
+| Run all tests | `pytest` |
+| Run single test | `pytest tests/test_file.py::test_name` |
+| Run tests verbose | `pytest -v` |
 
 ## 1. Environment & Dependencies
 
 ### Template
 
-This was derived from a template. Please remove template example code ("greet", etc).
+This repository contains example code (the `greet` function and related tests) that
+demonstrates the coding standards. When starting a new project:
 
-### Nix Setup
-*   **Nix Flake**: The project uses `flake.nix` to pin dependencies (Python 3.10+, pytest, black, isort, mypy).
-*   **Dev Shell**: Run `nix develop` to enter a shell with all dependencies available in your `PATH`.
-    *   A `.venv` virtual environment is automatically created with `pip install -e '.[dev]'`.
-    *   *Agent Note*: If you cannot run `nix develop`, assume tools are available or use `nix run` wrappers.
+1. Remove the example `greet` function from `py_start/lib.py`
+2. Remove the example test from `tests/test_lib.py`
+3. Update `py_start/__init__.py` to export your own functions
+4. Update `py_start/__main__.py` with your own CLI implementation
+5. Remove this section ("Template") of `AGENTS.md`
+
+The examples are provided to show proper style and can be referenced as models for
+your own implementation.
 
 ### Dependencies
 *   **Python Dependencies**: Defined in `pyproject.toml`
@@ -80,35 +87,24 @@ When adding new Python dependencies to the project, you need to update both the 
      ```
 
 4. **Using the updated dependencies**:
-   * Run `nix develop` to enter a shell with the updated dependencies
-   * Or run `pip install -e '.[dev]'` to update an existing environment
-
-5. **Verifying the dependency installation**:
-   * Inside a development shell, use `pip list` to verify the package is available
-   * Import the package in your code and run a simple test
+   * Run `pip install -e '.[dev]'` to install added dependencies
 
 **Important Notes**:
+* NEVER install dependencies directly with `pip`. ALWAYS update using `pip install -e '.[dev]'`.
 * Always prefer to use a specific version constraint in `pyproject.toml` (e.g., `~=1.0` or `>=1.0,<2.0`)
 * Ensure the package name in `default.nix` matches the Nix package name (may differ from PyPI name)
-* After adding dependencies, verify that the project still builds correctly with `nix build`
-
-**Common Issues with Dependencies**:
-* **Package not found in Nixpkgs**: If a Python package isn't available in Nixpkgs, you may need to create a custom package or use `buildPythonPackage` in your flake.nix
-* **Version mismatch**: Ensure that the version constraints in pyproject.toml are compatible with the versions available in Nixpkgs
-* **Missing type stubs**: For packages that lack type annotations, try adding the corresponding `types-<package>`, or if this doesn't exist, create a stub file with the needed types
-* **Import errors after adding dependencies**: Make sure to update your venv (`pip install -e '.[dev]'`) to pick up the new dependencies
 
 ## 2. Build, Test, and Lint Commands
 
 All commands should be executed from the project root directory.
 
 ### Formatting
-*   **Command**: `./format.sh` or `nix run .#format`
+*   **Command**: `./format.sh`
 *   **What it does**: 
     1. Runs `isort .` to organize imports
     2. Runs `black .` to format code style
     3. Runs `nix fmt` on all `.nix` files (if nix is available)
-*   **Rule**: ALWAYS run this before committing code. Never manually format Python files.
+*   **Rule**: ALWAYS run this before committing code.
 *   **Config**: Black and isort use their defaults (no custom configuration files).
 
 ### Type Checking
@@ -116,14 +112,22 @@ All commands should be executed from the project root directory.
 *   **Description**: Runs static type analysis on all Python files.
 *   **Rule**: Zero errors allowed. All new code must include type hints.
 *   **Tips**:
-    *   For type stubs issues: `pip install types-<package>`
-    *   Ignore third-party: Add `# type: ignore` comment (sparingly)
+    *   For type stubs issues, try adding `types-<package>` package.
+    *   Ignore third-party: If no stubs available, as a last resort, add `# type: ignore` comment
+
+#### Type Checking Configuration
+
+The project uses a strict mypy configuration defined in `mypy.ini`:
+
+* Disallows untyped definitions with `disallow_untyped_defs = True`
+* Enables warnings for various typing issues
+* Excludes tests from type checking
+
+Run mypy with `mypy .` from the project root to check all files.
 
 ### Testing
 
-#### Run All Tests
-*   **Command**: `./pytest.sh` or `pytest` or `nix run .#test`
-*   **Note**: The `pytest.sh` script sets `PYTHONPATH=.:$PYTHONPATH` automatically.
+Tests are run with `pytest`
 
 #### Run Single Test
 ```bash
@@ -157,19 +161,25 @@ pytest tests/test_lib.py -s
 *   **Type Hints**: **Mandatory** for all public functions, methods, and class attributes.
 
 ### Type Hints
+Use modern python type hints.
+
 ```python
-# Good - All types specified
-def calculate_total(items: list[dict[str, float]], tax_rate: float = 0.1) -> float:
-    return sum(item["price"] for item in items) * (1 + tax_rate)
+# BAD - untyped
+def log_messages(messages):
+    for msg in messages:
+        if msg:
+            print(msg)
 
-# Bad - Missing types
-def calculate_total(items, tax_rate=0.1):
-    return sum(item["price"] for item in items) * (1 + tax_rate)
+# BAD - legacy typing, inferred return
+def log_messages(messages: List[Optional[str]]):
+    ...
 
-# Good - Return type even for None
-def log_message(message: str) -> None:
-    print(message)
+# GOOD - modern typing, explicit return
+def log_messages(messages: list[str | None]) -> None:
+    ...
 ```
+
+Avoid `Any` and `# type: ignore` unless necessary.
 
 ### Naming Conventions
 | Type | Convention | Example |
@@ -193,33 +203,53 @@ In cases where exceptions are required, use specific, idiomatic code.
 ```python
 import logging
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("py_start")
 
-# Good - Specific exceptions, proper logging
-def process_data(data: dict[str, str]) -> None:
+# BAD - Bare except, print statements
+def process_data(data):
     try:
         value = data["key"]
-        result = int(value)
+        return int(value)
+    except:
+        print("Error occurred")
+        return None
+
+# GOOD - Pass-through exceptions, proper logging
+def process_data(data: dict[str, str]) -> int:
+    try:
+        value = data["key"]
+        return int(value)
     except KeyError as e:
         log.error("Missing required key: %s", e)
-        raise ValueError(f"Invalid data structure: {e}") from e
+        raise
     except ValueError as e:
         log.error("Invalid integer value: %s", e)
         raise
 
-# Bad - Bare except, print statements
-def process_data(data):
+# GOOD - Values instead of errors
+def process_data(data: dict[str, str]) -> int | None:
     try:
         value = data["key"]
-        result = int(value)
-    except:
-        print("Error occurred")
-        return None
+        return int(value)
+    except KeyError as e:
+        pass
+    except ValueError as e:
+        pass
+    return None
 ```
+
+#### Exceptions vs Values
+
+Use *exceptions* where:
+- Want to crash the program with a stack trace (e.g. `assert`)
+- Required for library/interface
+
+Use *values* where:
+- The error both occurs and is handled within our code
 
 ### Logging
 *   Use `logging` module, not `print()` statements (except for CLI output).
-*   Logger naming: `log = logging.getLogger(__name__)` (see `py_start/lib.py:3`).
+*   Logger naming: `log = logging.getLogger("py_start")`
 *   Levels: `debug()` for detailed info, `info()` for general events, `warning()`/`error()` for issues.
 
 ### File System Operations
@@ -286,18 +316,32 @@ py-start/
 - [ ] Type checking passes: `mypy .` (zero errors)
 - [ ] All tests pass: `pytest`
 - [ ] New functionality has tests
-- [ ] Type hints added to all new functions
+- [ ] New code has modern type hints
 - [ ] Logging used instead of print (except CLI output)
-
-### Common Issues
-*   **Import errors in tests**: Run `./pytest.sh` instead of `pytest` directly (sets PYTHONPATH).
-*   **Nix commands not working**: Enter dev shell first with `nix develop`.
-*   **Type errors from untyped libraries**: Install type stubs (`pip install types-<package>`) or use `# type: ignore`.
 
 ## 6. Entry Points
 
 The project defines a CLI entry point in `pyproject.toml`:
 *   **Command**: `pystart`
 *   **Implementation**: `py_start.__main__:main`
-*   **Usage**: After `pip install -e .`, run `pystart` from anywhere in the venv.
+*   **Usage**: After `pip install -e '.[dev]'`, run `pystart` from anywhere in the venv.
+
+## 7. Special Instructions for AI Coding Agents
+
+When working with this codebase, AI assistants should:
+
+1. **Follow Type Annotation Standards**: Always add return type annotations, even for
+   functions that return None.
+
+2. **Prefer Error Values Over Exceptions**: Follow the "Values instead of errors" pattern
+   shown in the Error Handling section when appropriate.
+
+3. **Ensure Consistent Documentation**: Add docstrings for all public functions, classes,
+   and modules using the Google style format shown in examples.
+
+4. **Apply Pre-Commit Checks**: Before suggesting committing changes, ensure the code would
+   pass the pre-commit checklist (formatting, type checking, tests).
+
+5. **Respect Project Structure**: Place new functionality in appropriate locations following
+   the established project structure.
 
