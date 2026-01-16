@@ -68,6 +68,10 @@
             postVenvCreation = ''
               pip install -e '.[dev]'
             '';
+            shellHook = ''
+              # pytest support
+              export PYTHONPATH="''${PYTHONPATH:-}:."
+            '';
           };
         };
 
@@ -77,11 +81,11 @@
           '';
 
           mypy = mkApp ''
-            mypy .
+            mypy . "$@"
           '';
 
           test = mkApp ''
-            ./pytest.sh
+            pytest "$@"
           '';
         };
 
