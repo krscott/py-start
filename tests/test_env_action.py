@@ -1,10 +1,7 @@
 import argparse
 import os
-from pathlib import Path
-from tempfile import NamedTemporaryFile
 
 from dotenv import load_dotenv
-import pytest
 
 from py_start.__main__ import EnvAction
 

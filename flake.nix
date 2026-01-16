@@ -26,24 +26,25 @@
         # Final derivation including any overrides made to output package
         inherit (self.packages.${system}) py-start;
 
-        devPkgs =
-          with pkgs;
+        pythonDev = py-start.python.withPackages (
+          ps:
+          with ps;
           [
             black
             isort
             mypy
-            python3.pkgs.pytest
-            python3.pkgs.venvShellHook
-            shfmt
+            venvShellHook
           ]
-          ++ py-start.buildInputs;
+          ++ py-start.propagatedBuildInputs
+          ++ py-start.nativeBuildInputs
+        );
 
         mkApp = text: {
           type = "app";
           program = pkgs.lib.getExe (
             pkgs.writeShellApplication {
               name = "app";
-              runtimeInputs = devPkgs;
+              runtimeInputs = [ pythonDev ];
               inherit text;
             }
           );
@@ -63,15 +64,13 @@
         devShells = {
           default = pkgs.mkShell {
             inputsFrom = [ py-start ];
-            nativeBuildInputs = devPkgs;
+            nativeBuildInputs = [ pythonDev ];
             venvDir = ".venv";
             postVenvCreation = ''
               pip install -e '.[dev]'
             '';
             shellHook = ''
               venvShellHook
-
-              # pytest support
               export PYTHONPATH="''${PYTHONPATH:-}:."
             '';
           };
@@ -84,10 +83,6 @@
 
           mypy = mkApp ''
             mypy . "$@"
-          '';
-
-          test = mkApp ''
-            python -m pytest "$@"
           '';
         };
 

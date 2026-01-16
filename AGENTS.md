@@ -12,9 +12,9 @@ This doc assumes the dev environment is already active.
 |--------|---------|
 | Format code | `./format.sh` |
 | Type check | `mypy .` |
-| Run all tests | `python -m pytest` |
-| Run single test | `python -m pytest tests/test_file.py::test_name` |
-| Run tests verbose | `python -m pytest -v` |
+| Run all tests | `pytest` |
+| Run single test | `pytest tests/test_file.py::test_name` |
+| Run tests verbose | `pytest -v` |
 
 ## 1. Environment & Dependencies
 
@@ -46,7 +46,7 @@ When adding new Python dependencies to the project, you need to update both the 
    * For runtime dependencies, add to the `dependencies` list:
      ```toml
      dependencies = [
-         "mypy~=1.9",
+         # ...
          "new-package~=1.0",  # Add your dependency here with version constraint
      ]
      ```
@@ -54,9 +54,7 @@ When adding new Python dependencies to the project, you need to update both the 
      ```toml
      [project.optional-dependencies]
      dev = [
-         "pytest",
-         "isort",
-         "black",
+         # ...
          "dev-package~=2.0",  # Add your dev dependency here
      ]
      ```
@@ -65,7 +63,7 @@ When adding new Python dependencies to the project, you need to update both the 
    * For runtime dependencies, add to the `propagatedBuildInputs` list:
      ```nix
      propagatedBuildInputs = [
-       mypy
+       # ...
        new-package  # Add the Nix package name here
      ];
      ```
@@ -76,11 +74,7 @@ When adding new Python dependencies to the project, you need to update both the 
      devPkgs =
        with pkgs;
        [
-         black
-         isort
-         mypy
-         python3.pkgs.pytest
-         python3.pkgs.venvShellHook
+         # ...
          new-dev-tool  # Add new development tool here
        ]
        ++ py-start.buildInputs;
@@ -91,7 +85,7 @@ When adding new Python dependencies to the project, you need to update both the 
 
 **Important Notes**:
 * NEVER install dependencies directly with `pip`. ALWAYS update using `pip install -e '.[dev]'`.
-* Always prefer to use a specific version constraint in `pyproject.toml` (e.g., `~=1.0` or `>=1.0,<2.0`)
+* Prefer specific version constraints in `pyproject.toml` (e.g., `~=1.0` or `>=1.0,<2.0`)
 * Ensure the package name in `default.nix` matches the Nix package name (may differ from PyPI name)
 
 ## 2. Build, Test, and Lint Commands
@@ -108,7 +102,7 @@ All commands should be executed from the project root directory.
 *   **Config**: Black and isort use their defaults (no custom configuration files).
 
 ### Type Checking
-*   **Command**: `mypy .` (inside dev shell) or `nix run .#mypy`
+*   **Command**: `mypy .`
 *   **Description**: Runs static type analysis on all Python files.
 *   **Rule**: Zero errors allowed. All new code must include type hints.
 *   **Tips**:
@@ -132,16 +126,16 @@ Tests are run with `pytest`
 #### Run Single Test
 ```bash
 # Specific test function
-python -m pytest tests/test_lib.py::test_greet
+pytest tests/test_lib.py::test_greet
 
 # Specific test file
-python -m pytest tests/test_lib.py
+pytest tests/test_lib.py
 
 # With verbose output
-python -m pytest tests/test_lib.py::test_greet -v
+pytest tests/test_lib.py::test_greet -v
 
 # With print statements shown
-python -m pytest tests/test_lib.py -s
+pytest tests/test_lib.py -s
 ```
 
 #### Test Organization
@@ -314,13 +308,13 @@ py-start/
 3.  **Verify**:
     *   Run `./format.sh` to automatically fix formatting.
     *   Run `mypy .` to ensure type correctness (zero errors required).
-    *   Run `python -m pytest` to verify tests pass (create tests for new functionality).
+    *   Run `pytest` to verify tests pass (create tests for new functionality).
 4.  **Commit**: Only commit once all checks pass.
 
 ### Pre-Commit Checklist
 - [ ] Code is formatted with `./format.sh`
 - [ ] Type checking passes: `mypy .` (zero errors)
-- [ ] All tests pass: `python -m pytest`
+- [ ] All tests pass: `pytest`
 - [ ] New functionality has tests
 - [ ] New code has modern type hints
 - [ ] Logging used instead of print (except CLI output)

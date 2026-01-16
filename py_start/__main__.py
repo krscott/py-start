@@ -4,9 +4,9 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from py_start.lib import greet
-
 from dotenv import load_dotenv
+
+from py_start.lib import greet
 
 
 def main() -> None:
