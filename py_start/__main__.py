@@ -7,7 +7,7 @@ from typing import Any
 from py_start.lib import greet
 
 
-def main():
+def main() -> None:
     opts = CliOpts.parse_args()
 
     logging.basicConfig(
@@ -24,7 +24,7 @@ class CliOpts:
     name: str
 
     @staticmethod
-    def parse_args():
+    def parse_args() -> "CliOpts":
         parser = argparse.ArgumentParser()
 
         parser.add_argument(
