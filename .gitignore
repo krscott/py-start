@@ -1,11 +1,17 @@
-.claude/
-.direnv/
-.envrc
+# Python
+*.egg-info
 .mypy_cache/
 .pytest_cache/
 .venv/
-.vscode/
-build/
-result
-*.egg-info
 __pycache__
+build/
+
+# Nix
+result
+
+# Dev Env
+.claude/
+.direnv/
+.env
+.envrc
+.vscode/
