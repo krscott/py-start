@@ -2,6 +2,7 @@
   buildPythonApplication,
   lib,
   mypy,
+  python-dotenv,
   setuptools,
 }:
 buildPythonApplication {
@@ -13,6 +14,7 @@ buildPythonApplication {
 
   propagatedBuildInputs = [
     mypy
+    python-dotenv
   ];
 
   doCheck = false;

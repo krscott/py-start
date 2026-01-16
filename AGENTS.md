@@ -12,9 +12,9 @@ This doc assumes the dev environment is already active.
 |--------|---------|
 | Format code | `./format.sh` |
 | Type check | `mypy .` |
-| Run all tests | `pytest` |
-| Run single test | `pytest tests/test_file.py::test_name` |
-| Run tests verbose | `pytest -v` |
+| Run all tests | `python -m pytest` |
+| Run single test | `python -m pytest tests/test_file.py::test_name` |
+| Run tests verbose | `python -m pytest -v` |
 
 ## 1. Environment & Dependencies
 
@@ -132,16 +132,16 @@ Tests are run with `pytest`
 #### Run Single Test
 ```bash
 # Specific test function
-pytest tests/test_lib.py::test_greet
+python -m pytest tests/test_lib.py::test_greet
 
 # Specific test file
-pytest tests/test_lib.py
+python -m pytest tests/test_lib.py
 
 # With verbose output
-pytest tests/test_lib.py::test_greet -v
+python -m pytest tests/test_lib.py::test_greet -v
 
 # With print statements shown
-pytest tests/test_lib.py -s
+python -m pytest tests/test_lib.py -s
 ```
 
 #### Test Organization
@@ -314,13 +314,13 @@ py-start/
 3.  **Verify**:
     *   Run `./format.sh` to automatically fix formatting.
     *   Run `mypy .` to ensure type correctness (zero errors required).
-    *   Run `pytest` to verify tests pass (create tests for new functionality).
+    *   Run `python -m pytest` to verify tests pass (create tests for new functionality).
 4.  **Commit**: Only commit once all checks pass.
 
 ### Pre-Commit Checklist
 - [ ] Code is formatted with `./format.sh`
 - [ ] Type checking passes: `mypy .` (zero errors)
-- [ ] All tests pass: `pytest`
+- [ ] All tests pass: `python -m pytest`
 - [ ] New functionality has tests
 - [ ] New code has modern type hints
 - [ ] Logging used instead of print (except CLI output)

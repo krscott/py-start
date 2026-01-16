@@ -5,6 +5,7 @@ requires-python = ">=3.10.12"
 
 dependencies = [
     "mypy~=1.9",
+    "python-dotenv~=1.0",
 ]
 
 [project.optional-dependencies]

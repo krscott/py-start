@@ -6,8 +6,12 @@ from typing import Any
 
 from py_start.lib import greet
 
+from dotenv import load_dotenv
+
 
 def main() -> None:
+    load_dotenv()
+
     opts = CliOpts.parse_args()
 
     logging.basicConfig(

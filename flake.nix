@@ -87,7 +87,7 @@
           '';
 
           test = mkApp ''
-            pytest "$@"
+            python -m pytest "$@"
           '';
         };
 
