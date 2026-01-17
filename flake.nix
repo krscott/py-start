@@ -33,7 +33,6 @@
             black
             isort
             mypy
-            venvShellHook
           ]
           ++ py-start.propagatedBuildInputs
           ++ py-start.nativeBuildInputs
@@ -65,12 +64,13 @@
           default = pkgs.mkShell {
             inputsFrom = [ py-start ];
             nativeBuildInputs = [ pythonDev ];
+            packages = [ pkgs.python3.pkgs.venvShellHook ];
             venvDir = ".venv";
             postVenvCreation = ''
               pip install -e '.[dev]'
             '';
             shellHook = ''
-              venvShellHook
+              runHook venvShellHook
               export PYTHONPATH="''${PYTHONPATH:-}:."
             '';
           };
