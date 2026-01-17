@@ -1,6 +1,6 @@
 import logging
 
-log = logging.getLogger("py_start")
+log = logging.getLogger(__name__)
 
 
 def greet(name: str) -> None:

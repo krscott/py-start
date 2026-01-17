@@ -8,6 +8,10 @@ fi
 
 proj="$1"
 
+# Generate project name variations for different contexts:
+# - proj_flat: Binary/command name (no separators) - e.g., "pystart"
+# - proj_hyphen: PyPI package name, git repo name - e.g., "py-start"
+# - proj_underscore: Python module/package name - e.g., "py_start"
 proj_flat=$(echo "$proj" | tr -d '_' | tr -d '-')
 proj_hyphen=$(echo "$proj" | tr '_' '-')
 proj_underscore=$(echo "$proj" | tr '-' '_')

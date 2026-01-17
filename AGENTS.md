@@ -21,13 +21,17 @@ This doc assumes the dev environment is already active.
 ### Template
 
 This repository contains example code (the `greet` function and related tests) that
-demonstrates the coding standards. When starting a new project:
+demonstrates the coding standards. The `init-template.sh` script automates the
+template initialization process.
 
-1. Remove the example `greet` function from `py_start/lib.py`
-2. Remove the example test from `tests/test_lib.py`
-3. Update `py_start/__init__.py` to export your own functions
-4. Update `py_start/__main__.py` with your own CLI implementation
-5. Remove this section ("Template") of `AGENTS.md`
+**When starting a new project from this template:**
+
+1. Run `./init-template.sh your_project_name` to rename the project
+2. Remove the example `greet` function from `your_project/lib.py`
+3. Remove the example test from `tests/test_lib.py`
+4. Update `your_project/__init__.py` to export your own functions
+5. Update `your_project/__main__.py` with your own CLI implementation
+6. Replace this "Template" section to describe your project's specific structure and conventions
 
 The examples are provided to show proper style and can be referenced as models for
 your own implementation.
@@ -40,9 +44,15 @@ your own implementation.
 *   **Python Version**: `>=3.10.12` (specified in `pyproject.toml`)
 
 ### Adding Python Dependencies
-When adding new Python dependencies to the project, you need to update both the `pyproject.toml` file and the `default.nix` file to ensure consistency across all environments:
 
-1. **Update `pyproject.toml`**:
+This project uses a three-layer dependency management system:
+1. **`pyproject.toml`** - Declares what Python packages you want (source of truth)
+2. **`default.nix`** - Maps Python packages to Nix packages (for reproducibility)
+3. **`pip install -e '.[dev]'`** - Installs packages from pyproject.toml into your venv
+
+**The workflow for adding dependencies:**
+
+1. **Update `pyproject.toml`** (declare what you want):
    * For runtime dependencies, add to the `dependencies` list:
      ```toml
      dependencies = [
@@ -59,7 +69,7 @@ When adding new Python dependencies to the project, you need to update both the 
      ]
      ```
 
-2. **Update `default.nix`**:
+2. **Update `default.nix`** (map to Nix packages):
    * For runtime dependencies, add to the `propagatedBuildInputs` list:
      ```nix
      propagatedBuildInputs = [
@@ -67,9 +77,10 @@ When adding new Python dependencies to the project, you need to update both the 
        new-package  # Add the Nix package name here
      ];
      ```
+   * Note: The Nix package name may differ from the PyPI name
 
-3. **Update `flake.nix` (if needed)**:
-   * For development tools and system dependencies, add to the `devPkgs` list:
+3. **Update `flake.nix`** (only for system-level dev tools):
+   * For development tools that aren't Python packages (like git, curl, etc.), add to the `devPkgs` list:
      ```nix
      devPkgs =
        with pkgs;
@@ -80,13 +91,15 @@ When adding new Python dependencies to the project, you need to update both the 
        ++ py-start.buildInputs;
      ```
 
-4. **Using the updated dependencies**:
-   * Run `pip install -e '.[dev]'` to install added dependencies
+4. **Install the dependencies**:
+   * Run `pip install -e '.[dev]'` to install from pyproject.toml into your venv
 
 **Important Notes**:
-* NEVER install dependencies directly with `pip`. ALWAYS update using `pip install -e '.[dev]'`.
+* ✅ **DO**: Run `pip install -e '.[dev]'` after updating pyproject.toml
+* ❌ **DON'T**: Run `pip install <package-name>` directly (bypasses pyproject.toml)
+* The key distinction: `pip install -e '.[dev]'` installs FROM pyproject.toml (correct), while `pip install <package>` installs a package directly (incorrect)
 * Prefer specific version constraints in `pyproject.toml` (e.g., `~=1.0` or `>=1.0,<2.0`)
-* Ensure the package name in `default.nix` matches the Nix package name (may differ from PyPI name)
+* Always update pyproject.toml first, then sync the Nix configuration
 
 ## 2. Build, Test, and Lint Commands
 
@@ -111,11 +124,13 @@ All commands should be executed from the project root directory.
 
 #### Type Checking Configuration
 
-The project uses a strict mypy configuration defined in `mypy.ini`:
+The project uses a strict mypy configuration defined in `pyproject.toml` under `[tool.mypy]`:
 
 * Disallows untyped definitions with `disallow_untyped_defs = True`
 * Enables warnings for various typing issues
-* Excludes tests from type checking
+* Excludes tests from type checking (to allow more flexible testing patterns)
+
+All tool configurations (mypy, isort, black) are consolidated in `pyproject.toml` for easier management.
 
 Run mypy with `mypy .` from the project root to check all files.
 
@@ -136,6 +151,26 @@ pytest tests/test_lib.py::test_greet -v
 
 # With print statements shown
 pytest tests/test_lib.py -s
+```
+
+#### Useful pytest Flags
+
+These flags are particularly helpful for AI agents debugging tests:
+
+*   `-v` / `--verbose` - Show detailed test names and results
+*   `-s` / `--capture=no` - Show print statements and stdout
+*   `-x` / `--exitfirst` - Stop on first failure (useful for debugging)
+*   `--lf` / `--last-failed` - Run only tests that failed in the last run
+*   `--ff` / `--failed-first` - Run failed tests first, then remaining tests
+*   `--pdb` - Drop into debugger on failures
+*   `-k EXPRESSION` - Run tests matching expression (e.g., `-k "test_greet or test_parse"`)
+*   `--collect-only` - Show what tests would be run without running them
+
+**Example workflow for debugging**:
+```bash
+pytest -x           # Run until first failure
+pytest --lf --pdb   # Re-run failed test with debugger
+pytest -v           # Verify all tests pass
 ```
 
 #### Test Organization
@@ -242,9 +277,31 @@ Use *values* where:
 - The error both occurs and is handled within our code
 
 ### Logging
-*   Use `logging` module, not `print()` statements (except for CLI output).
-*   Logger naming: `log = logging.getLogger("py_start")`
-*   Levels: `debug()` for detailed info, `info()` for general events, `warning()`/`error()` for issues.
+
+Use the `logging` module for operational messages, and `print()` for direct user output.
+
+**When to use each**:
+*   `print()` → Direct user-facing output, results, CLI responses (e.g., the actual greeting in the greet function)
+*   `log.info()` → Informational progress messages (e.g., "Starting server on port 8000")
+*   `log.debug()` → Detailed debugging information (e.g., "Processing record 42 of 100")
+*   `log.warning()` → Warning messages that don't stop execution
+*   `log.error()` → Error messages for exceptions or failures
+
+**Logger naming**:
+*   Prefer `log = logging.getLogger(__name__)` over hard-coded strings
+*   This provides better traceability and works correctly after template initialization
+*   Example: `log = logging.getLogger(__name__)` not `log = logging.getLogger("py_start")`
+
+**Example**:
+```python
+import logging
+
+log = logging.getLogger(__name__)
+
+def greet(name: str) -> None:
+    log.debug("Greeting user...")  # Operational message
+    print(f"Hello, {name}!")       # Direct user output
+```
 
 ### File System Operations
 *   **Use `pathlib.Path`** instead of `os.path`:
@@ -326,22 +383,39 @@ The project defines a CLI entry point in `pyproject.toml`:
 *   **Implementation**: `py_start.__main__:main`
 *   **Usage**: After `pip install -e '.[dev]'`, run `pystart` from anywhere in the venv.
 
-## 7. Special Instructions for AI Coding Agents
+## 7. Reusable Template Components
 
-When working with this codebase, AI assistants should:
+This template includes reusable utilities that can be leveraged in your projects:
 
-1. **Follow Type Annotation Standards**: Always add return type annotations, even for
-   functions that return None.
+### EnvAction - CLI Arguments with Environment Variable Fallbacks
 
-2. **Prefer Error Values Over Exceptions**: Follow the "Values instead of errors" pattern
-   shown in the Error Handling section when appropriate.
+The `EnvAction` class in `py_start/__main__.py` provides a custom `argparse.Action` that allows CLI arguments to fall back to environment variables. This is useful for configuration that can be specified either on the command line or through environment variables.
 
-3. **Ensure Consistent Documentation**: Add docstrings for all public functions, classes,
-   and modules using the Google style format shown in examples.
+**Features**:
+- Automatically checks environment variables when CLI argument is not provided
+- Handles boolean flags (with `nargs=0`)
+- Automatically updates help text to show default values and environment variable names
+- Respects `required` parameter logic based on presence of defaults or env vars
 
-4. **Apply Pre-Commit Checks**: Before suggesting committing changes, ensure the code would
-   pass the pre-commit checklist (formatting, type checking, tests).
+**Usage Example**:
+```python
+parser.add_argument(
+    "-v",
+    "--verbose",
+    action=EnvAction,
+    env_var="MYAPP_VERBOSE",
+    nargs=0,
+    help="show more detailed log messages",
+)
+```
 
-5. **Respect Project Structure**: Place new functionality in appropriate locations following
-   the established project structure.
+This will:
+1. Check if `-v` or `--verbose` is passed on the command line
+2. If not, check if `MYAPP_VERBOSE` environment variable is set
+3. Update the help text to show: "show more detailed log messages (env: MYAPP_VERBOSE)"
+
+**When to use**:
+- Configuration options that should work both from CLI and environment variables
+- Containerized applications where env vars are preferred
+- CI/CD pipelines where env vars are easier to manage than CLI flags
 
