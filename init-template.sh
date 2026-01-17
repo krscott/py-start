@@ -6,6 +6,11 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
+if test -n "$(git status --porcelain)"; then
+    echo "Git is dirty. Commit or stash changes."
+    exit 2
+fi
+
 proj="$1"
 
 # Generate project name variations for different contexts:
@@ -36,3 +41,8 @@ mv py_start "${proj_underscore}"
 echo "Deleting init script"
 rm .github/workflows/init-template-test.yml
 rm -- "$0"
+
+if git config user.name >/dev/null; then
+    git add .
+    git commit -m "Init template"
+fi
