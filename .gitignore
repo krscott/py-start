@@ -15,3 +15,5 @@ result
 .env
 .envrc
 .vscode/
+# Symlinked to AGENTS.md
+CLAUDE.md
