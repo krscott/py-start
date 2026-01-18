@@ -54,10 +54,6 @@
           default = py-start;
 
           py-start = pkgs.python3.pkgs.callPackage ./. { };
-
-          py-start-test = py-start.override {
-            doCheck = true;
-          };
         };
 
         devShells = {

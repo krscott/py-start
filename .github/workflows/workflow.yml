@@ -38,3 +38,6 @@ jobs:
 
     - name: Test and Build
       run: nix build -L
+
+    - name: Check nix
+      run: nix flake show '.?submodules=1'
