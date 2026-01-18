@@ -111,7 +111,7 @@ Use `pathlib.Path` instead of `os.path`.
 - [ ] `mypy .` passes
 - [ ] `pytest` passes
 - [ ] New code has type hints and tests
-- [ ] AGENTS.md updated if outdated
+- [ ] AGENTS.md and README.md updated if outdated
 
 ## 5. Reusable Components
 

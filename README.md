@@ -28,3 +28,4 @@ Start nix dev shell
 nix develop
 ```
 
+NOTE: If you rename scripts in pyproject.toml, you may need to delete and recreate .venv
