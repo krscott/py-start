@@ -14,8 +14,8 @@ Don't forget to [change](https://choosealicense.com/) the LICENSE.
 This repository contains several documentation files for different audiences:
 
 - **README.md** - User-facing project documentation for developers using or deploying this project
-- [**AGENTS.md**](AGENTS.md) - Comprehensive development guidelines for AI agents, including code style, conventions, and workflows
-- [**CLAUDE.md**](CLAUDE.md) - Entry point for Claude Code integration, just references AGENTS.md
+- [**AGENTS.md**](AGENTS.md) - Comprehensive development guidelines for AI agents,
+  including code style, conventions, and workflows (symlinked to CLAUDE.md in nix dev shell)
 
 ## Development
 
