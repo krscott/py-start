@@ -375,6 +375,7 @@ py-start/
 - [ ] New functionality has tests
 - [ ] New code has modern type hints
 - [ ] Logging used instead of print (except CLI output)
+- [ ] Fix outdated info in AGENTS.md
 
 ## 6. Entry Points
 
