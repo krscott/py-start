@@ -2,13 +2,13 @@
 set -eu
 
 if [ $# -ne 1 ]; then
-    echo "Usage: $(basename "$0") PROJ_NAME"
-    exit 1
+	echo "Usage: $(basename "$0") PROJ_NAME"
+	exit 1
 fi
 
 if test -n "$(git status --porcelain)"; then
-    echo "Git is dirty. Commit or stash changes."
-    exit 2
+	echo "Git is dirty. Commit or stash changes."
+	exit 2
 fi
 
 proj="$1"
@@ -26,13 +26,13 @@ proj_upper=$(echo "$proj_flat" | tr '[:lower:]' '[:upper:]')
 cd "$(dirname "$(readlink -f -- "$0")")"
 
 for file in $(git ls-files | grep -v 'init-template.sh'); do
-    if [ -e "$file" ]; then
-        echo "Processing: $file"
-        sed -i "s/pystart/$proj_flat/g" "$file"
-        sed -i "s/py-start/$proj_hyphen/g" "$file"
-        sed -i "s/py_start/$proj_underscore/g" "$file"
-        sed -i "s/PYSTART/$proj_upper/g" "$file"
-    fi
+	if [ -e "$file" ]; then
+		echo "Processing: $file"
+		sed -i "s/pystart/$proj_flat/g" "$file"
+		sed -i "s/py-start/$proj_hyphen/g" "$file"
+		sed -i "s/py_start/$proj_underscore/g" "$file"
+		sed -i "s/PYSTART/$proj_upper/g" "$file"
+	fi
 done
 
 echo "Renaming files"
@@ -42,7 +42,10 @@ echo "Deleting init script"
 rm .github/workflows/init-template-test.yml
 rm -- "$0"
 
+echo "Removing LICENSE - visit https://choosealicense.com to get a new one"
+rm LICENSE
+
 if git config user.name >/dev/null; then
-    git add .
-    git commit -m "Init template"
+	git add .
+	git commit -m "Init template"
 fi
