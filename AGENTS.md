@@ -6,10 +6,10 @@ Python project managed with **Nix**. Dev environment assumed active.
 
 | Action | Command |
 |--------|---------|
-| Format code | `./format.sh` |
 | Type check | `mypy .` |
 | Run all tests | `pytest` |
 | Run single test | `pytest tests/test_file.py::test_name` |
+| Format code | `./format.sh` |
 
 ## 1. Environment & Dependencies
 
@@ -34,10 +34,6 @@ Three-layer system:
 
 ## 2. Build, Test, and Lint
 
-### Formatting
-* **Command**: `./format.sh` (runs isort, black, nix fmt)
-* **Rule**: ALWAYS run before committing
-
 ### Type Checking
 * **Command**: `mypy .`
 * **Rule**: Zero errors allowed. All code must have type hints.
@@ -46,6 +42,10 @@ Three-layer system:
 ### Testing
 * Tests in `tests/` directory
 * Use pytest fixtures for setup/teardown
+
+### Formatting
+* **Command**: `./format.sh` (runs isort, black, nix fmt)
+* **Rule**: ALWAYS run before committing
 
 ## 3. Code Style
 
@@ -101,19 +101,19 @@ Use `pathlib.Path` instead of `os.path`.
 ### Development Cycle
 1. **Edit**: Make changes following style guidelines
 2. **Verify**:
-   * `./format.sh`
    * `mypy .` (zero errors)
    * `pytest` (write tests for new functionality)
    * `nix flake show '.?submodules=1'` (no nix errors)
+   * `./format.sh`
 3. **Commit**: Only after all checks pass
 
 ### Pre-Commit Checklist
-- [ ] `./format.sh` run
 - [ ] `mypy .` passes
 - [ ] `pytest` passes
 - [ ] `nix flake show '.?submodules=1'` succeeds
 - [ ] New code has type hints and tests
 - [ ] AGENTS.md and README.md updated if outdated
+- [ ] `./format.sh` run
 
 ## 5. Reusable Components
 
