@@ -43,10 +43,6 @@ Three-layer system:
 * Tests in `tests/` directory
 * Use pytest fixtures for setup/teardown
 
-### Formatting
-* **Command**: `./format.sh` (runs isort, black, nix fmt)
-* **Rule**: ALWAYS run before committing
-
 ## 3. Code Style
 
 ### Type Hints
@@ -104,7 +100,7 @@ Use `pathlib.Path` instead of `os.path`.
    * `mypy .` (zero errors)
    * `pytest` (write tests for new functionality)
    * `nix flake show '.?submodules=1'` (no nix errors)
-   * `./format.sh`
+   * `./format.sh` (only required after all feature work is done)
 3. **Commit**: Only after all checks pass
 
 ### Pre-Commit Checklist
@@ -113,7 +109,6 @@ Use `pathlib.Path` instead of `os.path`.
 - [ ] `nix flake show '.?submodules=1'` succeeds
 - [ ] New code has type hints and tests
 - [ ] AGENTS.md and README.md updated if outdated
-- [ ] `./format.sh` run
 
 ## 5. Reusable Components
 
