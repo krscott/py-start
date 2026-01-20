@@ -28,6 +28,8 @@ skip = [".direnv", "result", ".venv"]
 
 [tool.pyright]
 typeCheckingMode = "strict"
+reportMissingTypeStubs = "none"
+exclude = ["tests", "tests/**", ".direnv"]
 
 [tool.mypy]
 strict = true
