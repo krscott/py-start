@@ -41,6 +41,9 @@ show_error_context = true
 # module = ["example"]
 # ignore_missing_imports = true
 
+[tool.setuptools.packages.find]
+exclude = ["result*"]
+
 # [tool.setuptools.package-data]
 # # Uncomment to include non-Python files in your package distribution
 # # Example: include all .txt files from any package directory
