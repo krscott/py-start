@@ -4,12 +4,14 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
+from setproctitle import setproctitle
 from dotenv import find_dotenv, load_dotenv
 
 from py_start.lib import greet
 
 
 def main() -> None:
+    setproctitle("pystart")
     load_dotenv(find_dotenv(usecwd=True))
 
     opts = CliOpts.parse_args()

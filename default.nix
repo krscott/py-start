@@ -3,6 +3,7 @@
   buildPythonApplication,
   lib,
   python-dotenv,
+  setproctitle,
   setuptools,
   pytest,
 }:
@@ -15,6 +16,7 @@ buildPythonApplication {
 
   propagatedBuildInputs = [
     python-dotenv
+    setproctitle
   ];
 
   nativeCheckInputs = [ pytest ];
