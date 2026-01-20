@@ -4,13 +4,13 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 from py_start.lib import greet
 
 
 def main() -> None:
-    load_dotenv()
+    load_dotenv(find_dotenv(usecwd=True))
 
     opts = CliOpts.parse_args()
 
