@@ -4,8 +4,8 @@ import os
 from dataclasses import dataclass
 from typing import Any
 
-from setproctitle import setproctitle
 from dotenv import find_dotenv, load_dotenv
+from setproctitle import setproctitle
 
 from py_start.lib import greet
 
