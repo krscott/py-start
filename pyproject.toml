@@ -23,6 +23,9 @@ pystart = "py_start.__main__:main"
 requires = ["setuptools >= 61.2"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = ["py_start"]
+
 [tool.isort]
 profile = "black"
 skip = [".direnv", "result", ".venv"]
@@ -44,9 +47,6 @@ show_error_context = true
 # [[tool.mypy.overrides]]
 # module = ["example"]
 # ignore_missing_imports = true
-
-[tool.setuptools.packages.find]
-exclude = ["result*"]
 
 # [tool.setuptools.package-data]
 # # Uncomment to include non-Python files in your package distribution
