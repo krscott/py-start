@@ -36,8 +36,8 @@
             isort
             mypy
           ]
-          ++ py-start.propagatedBuildInputs
-          ++ py-start.nativeBuildInputs
+          ++ pkgs.py-start.propagatedBuildInputs
+          ++ pkgs.py-start.nativeBuildInputs
         );
 
         mkApp = text: {
@@ -59,6 +59,7 @@
 
         devShells = {
           default = pkgs.mkShell {
+            inputsFrom = [ pkgs.py-start ];
             nativeBuildInputs = [ pythonDev ];
             packages = [ pkgs.python3.pkgs.venvShellHook ];
             venvDir = ".venv";
