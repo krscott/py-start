@@ -92,6 +92,68 @@ def process_data(data: dict[str, str]) -> int:
 ### File System
 Use `pathlib.Path` instead of `os.path`.
 
+### Data-Oriented Design
+Follow data-oriented design principles to keep code simple and maintainable:
+
+**Separate data from behavior:**
+* Use plain data structures: `dict`, `list`, `dataclasses`, `TypedDict`
+* Transform data through pure functions instead of methods
+* Avoid complex class hierarchies and deep inheritance
+
+```python
+# BAD - Object-oriented approach
+class UserProcessor:
+    def __init__(self, user: User):
+        self.user = user
+
+    def process(self) -> ProcessedUser:
+        # mix data and behavior
+        ...
+
+# GOOD - Data-oriented approach
+@dataclass
+class User:
+    id: int
+    name: str
+    email: str
+
+def process_user(user: User) -> ProcessedUser:
+    # pure function transforms data
+    ...
+```
+
+**Keep data structures simple:**
+* Prefer flat structures over nested ones when possible
+* Use composition over inheritance
+* Make data easy to inspect, test, and serialize
+
+```python
+# BAD - Complex inheritance
+class BaseEntity:
+    ...
+class UserEntity(BaseEntity):
+    ...
+class AdminUserEntity(UserEntity):
+    ...
+
+# GOOD - Simple composition
+@dataclass
+class User:
+    id: int
+    name: str
+    role: Role
+
+@dataclass
+class Role:
+    name: str
+    permissions: list[str]
+```
+
+**When to use classes:**
+* Resource management (file handles, connections) - use context managers
+* Encapsulating external APIs or complex state machines
+* Keep methods focused on the object's core responsibility
+
 ## 4. Workflow
 
 ### Development Cycle
