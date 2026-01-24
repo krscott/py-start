@@ -21,12 +21,14 @@
     flake-utils.lib.eachSystem supportedSystems (
       system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        localOverlay = import ./overlay.nix;
 
-        # Final derivation including any overrides made to output package
-        inherit (self.packages.${system}) py-start;
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ localOverlay ];
+        };
 
-        pythonDev = py-start.pythonModule.withPackages (
+        pythonDev = pkgs.python3.pkgs.py-start.pythonModule.withPackages (
           ps:
           with ps;
           [
@@ -51,14 +53,12 @@
       in
       {
         packages = {
-          default = py-start;
-
-          py-start = pkgs.python3.pkgs.callPackage ./. { };
+          inherit (pkgs) py-start;
+          default = pkgs.py-start;
         };
 
         devShells = {
           default = pkgs.mkShell {
-            inputsFrom = [ py-start ];
             nativeBuildInputs = [ pythonDev ];
             packages = [ pkgs.python3.pkgs.venvShellHook ];
             venvDir = ".venv";
