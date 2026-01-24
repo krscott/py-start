@@ -26,7 +26,7 @@
         # Final derivation including any overrides made to output package
         inherit (self.packages.${system}) py-start;
 
-        pythonDev = py-start.python.withPackages (
+        pythonDev = py-start.pythonModule.withPackages (
           ps:
           with ps;
           [

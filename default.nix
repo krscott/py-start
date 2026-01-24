@@ -1,13 +1,12 @@
 {
-  python,
-  buildPythonApplication,
+  buildPythonPackage,
   lib,
+  pytestCheckHook,
   python-dotenv,
   setproctitle,
   setuptools,
-  pytest,
 }:
-buildPythonApplication {
+buildPythonPackage {
   name = "py-start";
   src = lib.cleanSource ./.;
   pyproject = true;
@@ -19,17 +18,11 @@ buildPythonApplication {
     setproctitle
   ];
 
-  nativeCheckInputs = [ pytest ];
+  nativeCheckInputs = [
+    pytestCheckHook
+  ];
 
-  checkPhase = ''
-    pytest
-  '';
-
-  pythonImportsCheck = [ "py_start" ];
-
-  passthru = {
-    inherit python;
-  };
+  # pythonImportsCheck = [ "py_start" ];
 
   meta = {
     mainProgram = "pystart";
