@@ -35,6 +35,7 @@
             black
             isort
             mypy
+            pyright
           ]
           ++ pkgs.py-start.propagatedBuildInputs
           ++ pkgs.py-start.nativeBuildInputs

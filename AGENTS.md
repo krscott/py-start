@@ -6,7 +6,8 @@ Python project managed with **Nix**. Dev environment assumed active.
 
 | Action | Command |
 |--------|---------|
-| Type check | `mypy .` |
+| Type check (required) | `mypy .` |
+| Type check (optional) | `pyright` |
 | Run all tests | `pytest` |
 | Run single test | `pytest tests/test_file.py::test_name` |
 | Format code | `./format.sh` |
@@ -38,6 +39,15 @@ Three-layer system:
 * **Command**: `mypy .`
 * **Rule**: Zero errors allowed. All code must have type hints.
 * Config in `pyproject.toml` under `[tool.mypy]`
+
+**Pyright (optional):**
+* Available in dev shell for additional type checking: `pyright`
+* **Agent policy**:
+  - Agents should run pyright and fix trivial issues (e.g., adding missing type annotations, fixing obvious type errors)
+  - Only mypy is required to pass; pyright warnings are informational
+  - Non-trivial pyright issues that require refactoring beyond simple type definitions should be left to the user
+  - Examples of trivial fixes: adding return type annotations, annotating untyped variables
+  - Examples of non-trivial issues: restructuring code to satisfy strict type checks, major API changes
 
 ### Testing
 * Tests in `tests/` directory
