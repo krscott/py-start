@@ -35,7 +35,6 @@
             black
             isort
             mypy
-            pyright
           ]
           ++ pkgs.py-start.propagatedBuildInputs
           ++ pkgs.py-start.nativeBuildInputs
@@ -61,7 +60,10 @@
         devShells = {
           default = pkgs.mkShell {
             inputsFrom = [ pkgs.py-start ];
-            nativeBuildInputs = [ pythonDev ];
+            nativeBuildInputs = [
+              pythonDev
+              pkgs.pyright
+            ];
             packages = [ pkgs.python3.pkgs.venvShellHook ];
             venvDir = ".venv";
             postVenvCreation = ''
