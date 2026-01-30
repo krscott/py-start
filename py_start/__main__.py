@@ -7,32 +7,36 @@ from typing import Any
 from dotenv import find_dotenv, load_dotenv
 from setproctitle import setproctitle
 
-from py_start.lib import greet
+from py_start.lib import Options, greet
 
 
 def main() -> None:
     setproctitle("pystart")
     load_dotenv(find_dotenv(usecwd=True))
 
-    opts = CliOpts.parse_args()
+    cli_opts = CliOpts.parse_args()
 
     logging.basicConfig(
-        level=logging.DEBUG if opts.verbose else logging.INFO,
+        level=logging.DEBUG if cli_opts.verbose else logging.INFO,
         format="%(message)s",
     )
 
-    greet(opts.name)
+    greet(cli_opts.app_opts)
 
 
 @dataclass(kw_only=True, frozen=True)
 class CliOpts:
+    app_opts: Options
     verbose: bool
-    name: str
 
     @staticmethod
     def parse_args() -> "CliOpts":
         parser = argparse.ArgumentParser()
 
+        # App options
+        parser.add_argument("name", nargs="?", default="World", help="Your name")
+
+        # CLI-specific options
         parser.add_argument(
             "-v",
             "--verbose",
@@ -41,13 +45,14 @@ class CliOpts:
             nargs=0,
             help="show more detailed log messages",
         )
-        parser.add_argument("name", nargs="?", default="World", help="Your name")
 
         args = parser.parse_args()
 
         return CliOpts(
+            app_opts=Options(
+                name=args.name,
+            ),
             verbose=args.verbose is not None,
-            name=args.name,
         )
 
 
