@@ -1,11 +1,11 @@
-#!/usr/bin/env sh
-set -eu
+#!/usr/bin/env bash
+set -euo pipefail
+shopt -s globstar
 
 isort .
 black .
 
 if command -v nix >/dev/null; then
-    for file in $(git ls-files '*.nix'); do
-        nix fmt "$file"
-    done
+    set -x
+    nix fmt ./**/*.nix
 fi
