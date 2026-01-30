@@ -22,6 +22,9 @@ buildPythonPackage {
     pytestCheckHook
   ];
 
+  # Skip integration tests during build (they require the installed executable)
+  pytestFlagsArray = [ "-m 'not integration'" ];
+
   # pythonImportsCheck = [ "py_start" ];
 
   meta = {

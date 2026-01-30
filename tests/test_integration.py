@@ -6,7 +6,10 @@ These tests invoke the CLI as a real process to verify the end-to-end user exper
 import os
 import subprocess
 
+import pytest
 
+
+@pytest.mark.integration
 def test_cli_basic_argument() -> None:
     """Test CLI with a basic name argument."""
     result = subprocess.run(
@@ -18,6 +21,7 @@ def test_cli_basic_argument() -> None:
     assert "Hello, Alice!" in result.stdout
 
 
+@pytest.mark.integration
 def test_cli_default_name() -> None:
     """Test CLI with no arguments uses default name."""
     result = subprocess.run(
@@ -29,6 +33,7 @@ def test_cli_default_name() -> None:
     assert "Hello, World!" in result.stdout
 
 
+@pytest.mark.integration
 def test_cli_verbose_flag() -> None:
     """Test CLI with --verbose flag shows debug output."""
     result = subprocess.run(
@@ -41,6 +46,7 @@ def test_cli_verbose_flag() -> None:
     assert "Greeting user..." in result.stderr
 
 
+@pytest.mark.integration
 def test_cli_verbose_short_flag() -> None:
     """Test CLI with -v short flag shows debug output."""
     result = subprocess.run(
@@ -53,6 +59,7 @@ def test_cli_verbose_short_flag() -> None:
     assert "Greeting user..." in result.stderr
 
 
+@pytest.mark.integration
 def test_cli_verbose_env_var() -> None:
     """Test CLI with PYSTART_VERBOSE environment variable."""
     env = os.environ.copy()
@@ -68,6 +75,7 @@ def test_cli_verbose_env_var() -> None:
     assert "Greeting user..." in result.stderr
 
 
+@pytest.mark.integration
 def test_cli_flag_overrides_env_var() -> None:
     """Test that command line flag works even when env var is not set."""
     env = os.environ.copy()
