@@ -6,8 +6,8 @@ Python project managed with **Nix**. Dev environment assumed active.
 
 | Action | Command |
 |--------|---------|
-| Type check (required) | `mypy .` |
-| Type check (optional) | `pyright` |
+| Type check | `pyright` |
+| Type check | `mypy .` |
 | Run all tests | `pytest` |
 | Run single test | `pytest tests/test_file.py::test_name` |
 | Format code | `./format.sh` |
@@ -36,18 +36,21 @@ Three-layer system:
 ## 2. Build, Test, and Lint
 
 ### Type Checking
-* **Command**: `mypy .`
-* **Rule**: Zero errors allowed. All code must have type hints.
-* Config in `pyproject.toml` under `[tool.mypy]`
+**Both pyright and mypy must pass with zero errors.**
 
-**Pyright (optional):**
-* Available in dev shell for additional type checking: `pyright`
+**Pyright:**
+* **Command**: `pyright`
 * **Agent policy**:
-  - Agents should run pyright and fix trivial issues (e.g., adding missing type annotations, fixing obvious type errors)
-  - Only mypy is required to pass; pyright warnings are informational
-  - Non-trivial pyright issues that require refactoring beyond simple type definitions should be left to the user
-  - Examples of trivial fixes: adding return type annotations, annotating untyped variables
-  - Examples of non-trivial issues: restructuring code to satisfy strict type checks, major API changes
+  - Run pyright after implementation is complete
+  - Fix trivial issues (e.g., adding missing type annotations, fixing obvious type errors)
+    - Examples of trivial fixes: adding return type annotations, annotating untyped variables
+  - If non-trivial issues remain (restructuring code, major API changes), ask user to get guidance on the approach
+  - Zero errors required before considering work complete
+
+**mypy**:
+* **Command**: `mypy .`
+* **Agent policy**:
+  - Zero errors required
 
 ### Testing
 * Tests in `tests/` directory
@@ -154,14 +157,14 @@ Prefer returning values over throwing exceptions.
 
 ```python
 # Prefer values when error is handled locally
-def process_data(data: dict[str, str]) -> int | None:
+def process_data_safe(data: dict[str, str]) -> int | None:
     try:
         return int(data["key"])
     except (KeyError, ValueError):
         return None
 
 # Use exceptions when caller needs to handle or for crash-with-trace
-def process_data(data: dict[str, str]) -> int:
+def process_data_strict(data: dict[str, str]) -> int:
     try:
         return int(data["key"])
     except KeyError as e:
@@ -244,14 +247,16 @@ class Role:
 ### Development Cycle
 1. **Edit**: Make changes following style guidelines
 2. **Verify**:
-   * `pyright` or `mypy .` (zero errors)
+   * `pyright` (zero errors)
+   * `mypy .` (zero errors)
    * `pytest` (write tests for new functionality)
    * `nix flake show '.?submodules=1'` (no nix errors)
    * `./format.sh` (only required after all feature work is done)
 3. **Commit**: Only after all checks pass
 
 ### Pre-Commit Checklist
-- [ ] `pyright` or `mypy .` passes
+- [ ] `pyright` passes (zero errors)
+- [ ] `mypy .` passes (zero errors)
 - [ ] `pytest` passes
 - [ ] `nix flake show '.?submodules=1'` succeeds
 - [ ] New code has type hints and tests
