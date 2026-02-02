@@ -6,10 +6,10 @@ Python project managed with **Nix**. Dev environment assumed active.
 
 | Action | Command |
 |--------|---------|
-| Type check | `pyright` |
-| Type check | `mypy .` |
-| Run all tests | `pytest` |
-| Run single test | `pytest tests/test_file.py::test_name` |
+| Type check | `python -m pyright` |
+| Type check | `python -m mypy .` |
+| Run all tests | `python -m pytest` |
+| Run single test | `python -m pytest tests/test_file.py::test_name` |
 | Format code | `./format.sh` |
 
 ## 1. Environment & Dependencies
@@ -33,13 +33,38 @@ Three-layer system:
 
 **Important**: Always use `pip install -e '.[dev]'`, never `pip install <package>` directly.
 
+### Nix Environment
+
+**Common issues when working with Nix + venv setup:**
+
+1. **missing .venv**
+    - If .venv is not present, but nix exists on the system, do not create the
+      virtual environment yourself. Ask the user to restart the agent from
+      within a new `nix develop` environment.
+
+2. **Tools can't find packages installed in venv:**
+    - Running tools directly (e.g., `pytest`, `mypy`, `pyright`) uses Nix environment versions, which can't see venv packages
+    - **Solution: Always use `python -m <tool>`** - this uses the venv's python and sees all venv packages
+    - This is especially important after adding new dependencies
+    - Examples: `python -m pytest`, `python -m mypy .`, `python -m pyright`
+
+3. **mypy and type stubs:**
+    - For packages without built-in type hints, add stub packages to dev dependencies
+    - Example: `tqdm` requires `types-tqdm` in `[project.optional-dependencies.dev]`
+    - If stub packages aren't available, add mypy override in `pyproject.toml`:
+        ```toml
+        [[tool.mypy.overrides]]
+        module = "package_name"
+        ignore_missing_imports = true
+        ```
+
 ## 2. Build, Test, and Lint
 
 ### Type Checking
 **Both pyright and mypy must pass with zero errors.**
 
 **Pyright:**
-* **Command**: `pyright`
+* **Command**: `python -m pyright`
 * **Agent policy**:
   - Run pyright after implementation is complete
   - Fix trivial issues (e.g., adding missing type annotations, fixing obvious type errors)
@@ -48,7 +73,7 @@ Three-layer system:
   - Zero errors required before considering work complete
 
 **mypy**:
-* **Command**: `mypy .`
+* **Command**: `python -m mypy .`
 * **Agent policy**:
   - Zero errors required
 
@@ -247,17 +272,17 @@ class Role:
 ### Development Cycle
 1. **Edit**: Make changes following style guidelines
 2. **Verify**:
-   * `pyright` (zero errors)
-   * `mypy .` (zero errors)
-   * `pytest` (write tests for new functionality)
-   * `nix flake show '.?submodules=1'` (no nix errors)
+   * `python -m pyright` (zero errors)
+   * `python -m mypy .` (zero errors)
+   * `python -m pytest` (write tests for new functionality)
+   * `nix flake show '.?submodules=1'` (if nix available, no nix errors)
    * `./format.sh` (only required after all feature work is done)
 3. **Commit**: Only after all checks pass
 
 ### Pre-Commit Checklist
-- [ ] `pyright` passes (zero errors)
-- [ ] `mypy .` passes (zero errors)
-- [ ] `pytest` passes
+- [ ] `python -m pyright` passes (zero errors)
+- [ ] `python -m mypy .` passes (zero errors)
+- [ ] `python -m pytest` passes
 - [ ] `nix flake show '.?submodules=1'` succeeds
 - [ ] New code has type hints and tests
 - [ ] AGENTS.md, README.md, and DESIGN.md updated if outdated
