@@ -260,7 +260,7 @@ class Role:
 - [ ] `pytest` passes
 - [ ] `nix flake show '.?submodules=1'` succeeds
 - [ ] New code has type hints and tests
-- [ ] AGENTS.md and README.md updated if outdated
+- [ ] AGENTS.md, README.md, and DESIGN.md updated if outdated
 
 ## 5. Reusable Components
 
@@ -277,3 +277,16 @@ parser.add_argument(
     help="show more detailed log messages",
 )
 ```
+
+## 6. Documentation
+
+### DESIGN.md
+**Keep DESIGN.md up to date.**
+
+This file serves as a blueprint for the application's architecture and design. If you make significant changes to:
+*   The architecture (e.g., adding modules, changing entry points)
+*   The interface (e.g., CLI arguments, environment variables)
+*   The core functionality
+*   The data flow
+
+You **must** update `DESIGN.md` to reflect these changes. An AI agent should be able to read `DESIGN.md` and reproduce the current state of the application.
