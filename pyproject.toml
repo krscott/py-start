@@ -27,6 +27,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["py_start"]
 
+[tool.setuptools.package-data]
+"py_start" = ["py.typed"]
+
 [tool.isort]
 profile = "black"
 skip = [".direnv", "result", ".venv"]
@@ -53,10 +56,3 @@ markers = [
 # [[tool.mypy.overrides]]
 # module = ["example"]
 # ignore_missing_imports = true
-
-# [tool.setuptools.package-data]
-# # Uncomment to include non-Python files in your package distribution
-# # Example: include all .txt files from any package directory
-# "*" = [
-#     "*.txt",
-# ]
