@@ -1,7 +1,5 @@
 # Agent Guide for py-start
 
-This document is to provide agents information to avoid common mistakes.
-
 ## Quick Reference
 
 | Action | Command |
@@ -9,22 +7,19 @@ This document is to provide agents information to avoid common mistakes.
 | Type check | `python -m pyright` |
 | Type check | `python -m mypy .` |
 | Run tests | `python -m pytest` |
-| Format code | `./format.sh` |
 
 ## Environment & Dependencies
 
 ### Template
 
-Run `./init-template.sh your_project_name` to initialize a new project from this template.
-Then remove the example `greet` function and tests, and this "Template" section.
+Code from the original template "py start" may be removed.
 
 ### Adding Dependencies
 
+Don't use `pip install <package>` directly. Instead:
 1. Add to `pyproject.toml` (`dependencies` or `optional-dependencies.dev`)
 2. Add corresponding Nix package to `default.nix`
 3. Run `pip install -e '.[dev]'`
-
-Always use `pip install -e '.[dev]'`, never `pip install <package>` directly.
 
 ### Nix Environment
 
@@ -63,24 +58,14 @@ be better to set the error to be ignored in the config.
 ## Code Style
 
 ### Type Hints
-Use modern Python 3.10+ syntax:
-
-```python
-# BAD
-def log_messages(messages: List[Optional[str]]):
-    ...
-
-# GOOD
-def log_messages(messages: list[str | None]) -> None:
-    ...
-```
+Use modern Python 3.10+ type hints (e.g. `list[str | None]`):
 
 ### Imports
 Imports go at the top of the file. Don't include within functions unless absolutely necessary.
 
 ### Error Handling
 * Prefer returning values over throwing exceptions.
-* Prefer general Exception classes over specific
+* Prefer general exception classes over specific
 
 ### File System
 Use `pathlib.Path` instead of `os.path`.
@@ -93,11 +78,5 @@ Use `pathlib.Path` instead of `os.path`.
 ## Documentation
 
 ### DESIGN.md
-This file serves as a blueprint for the application's architecture and design. If you make significant changes to...
-
-*   The architecture (e.g., adding modules, changing entry points)
-*   The interface (e.g., CLI arguments, environment variables)
-*   The core functionality
-*   The data flow
-
-...you **must** update `DESIGN.md` to reflect these changes. An AI agent should be able to read `DESIGN.md` and reproduce the current state of the application.
+This file serves as a blueprint for the application's design.
+An AI agent should be able to read `DESIGN.md` and reproduce the application.
