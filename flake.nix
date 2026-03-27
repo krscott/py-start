@@ -74,9 +74,6 @@
             shellHook = ''
               runHook venvShellHook
               export PYTHONPATH="''${PYTHONPATH:-}:."
-              if [ ! -f CLAUDE.md ]; then
-                ln -s AGENTS.md CLAUDE.md
-              fi
             '';
           };
         };
