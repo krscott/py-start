@@ -1,16 +1,15 @@
 import argparse
-import os
 from pathlib import Path
 
+import pytest
 from dotenv import load_dotenv
 
 from py_start.__main__ import EnvAction
 
 
-def test_env_action_basic() -> None:
+def test_env_action_basic(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that EnvAction handles environment variables correctly."""
-    # Set environment variable
-    os.environ["TEST_ENV_VAR"] = "env_value"
+    monkeypatch.setenv("TEST_ENV_VAR", "env_value")
 
     # Setup a test ArgumentParser
     parser = argparse.ArgumentParser()
@@ -30,12 +29,10 @@ def test_env_action_basic() -> None:
     args = parser.parse_args(["--test-option", "cli_value"])
     assert args.test_option == "cli_value"
 
-    # Clean up
-    del os.environ["TEST_ENV_VAR"]
 
-
-def test_env_action_dotenv(tmp_path: Path) -> None:
+def test_env_action_dotenv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that EnvAction works with dotenv loaded variables."""
+    monkeypatch.delenv("DOTENV_TEST_VAR", raising=False)
 
     # Create a temporary .env file
     env_file = tmp_path / ".env"
@@ -62,13 +59,11 @@ def test_env_action_dotenv(tmp_path: Path) -> None:
     args = parser.parse_args(["--test-option", "cli_value"])
     assert args.test_option == "cli_value"
 
-    # Clean up
-    if "DOTENV_TEST_VAR" in os.environ:
-        del os.environ["DOTENV_TEST_VAR"]
 
-
-def test_env_action_boolean_flag() -> None:
+def test_env_action_boolean_flag(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that EnvAction works with boolean flags."""
+    monkeypatch.delenv("VERBOSE", raising=False)
+
     # Setup a test ArgumentParser
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -80,7 +75,7 @@ def test_env_action_boolean_flag() -> None:
     assert args.verbose is None
 
     # Test with environment variable set
-    os.environ["VERBOSE"] = "1"
+    monkeypatch.setenv("VERBOSE", "1")
     # Force the parser to create a new instance to pick up the environment change
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -93,14 +88,13 @@ def test_env_action_boolean_flag() -> None:
     args = parser.parse_args(["--verbose"])
     assert args.verbose is True
 
-    # Clean up
-    del os.environ["VERBOSE"]
 
-
-def test_env_action_boolean_flag_false_values() -> None:
+def test_env_action_boolean_flag_false_values(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Test that common false-like env values disable boolean flags."""
     for value in ["", "0", "false", "no", "off"]:
-        os.environ["VERBOSE"] = value
+        monkeypatch.setenv("VERBOSE", value)
         parser = argparse.ArgumentParser()
         parser.add_argument(
             "--verbose",
@@ -116,11 +110,11 @@ def test_env_action_boolean_flag_false_values() -> None:
         else:
             assert args.verbose is False
 
-    del os.environ["VERBOSE"]
 
-
-def test_env_action_default() -> None:
+def test_env_action_default(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test that EnvAction respects default values."""
+    monkeypatch.delenv("TEST_DEFAULT_VAR", raising=False)
+
     # Setup a test ArgumentParser
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -136,7 +130,7 @@ def test_env_action_default() -> None:
     assert args.test_option == "default_value"
 
     # Test with environment variable overriding default
-    os.environ["TEST_DEFAULT_VAR"] = "env_value"
+    monkeypatch.setenv("TEST_DEFAULT_VAR", "env_value")
     # Force the parser to create a new instance to pick up the environment change
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -152,6 +146,3 @@ def test_env_action_default() -> None:
     # Test with command line overriding both
     args = parser.parse_args(["--test-option", "cli_value"])
     assert args.test_option == "cli_value"
-
-    # Clean up
-    del os.environ["TEST_DEFAULT_VAR"]
