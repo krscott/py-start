@@ -6,12 +6,20 @@ if [ $# -ne 1 ]; then
 	exit 1
 fi
 
+proj="$1"
+
+case "$proj" in
+"" | [!A-Za-z]* | *[!A-Za-z0-9_-]*)
+	echo "Invalid project name: $proj"
+	echo "Use ASCII letters, numbers, '-' or '_', starting with a letter."
+	exit 1
+	;;
+esac
+
 if test -n "$(git status --porcelain)"; then
 	echo "Git is dirty. Commit or stash changes."
 	exit 2
 fi
-
-proj="$1"
 
 # Generate project name variations for different contexts:
 # - proj_flat: Binary/command name (no separators) - e.g., "pystart"
