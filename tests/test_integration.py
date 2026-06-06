@@ -76,6 +76,22 @@ def test_cli_verbose_env_var() -> None:
 
 
 @pytest.mark.integration
+def test_cli_verbose_env_var_false() -> None:
+    """Test that PYSTART_VERBOSE=0 does not enable debug output."""
+    env = os.environ.copy()
+    env["PYSTART_VERBOSE"] = "0"
+    result = subprocess.run(
+        ["pystart", "David"],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    assert result.returncode == 0
+    assert "Hello, David!" in result.stdout
+    assert "Greeting user..." not in result.stderr
+
+
+@pytest.mark.integration
 def test_cli_flag_overrides_env_var() -> None:
     """Test that command line flag works even when env var is not set."""
     env = os.environ.copy()

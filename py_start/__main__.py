@@ -52,7 +52,7 @@ class CliOpts:
             app_opts=Options(
                 name=args.name,
             ),
-            verbose=args.verbose is not None,
+            verbose=bool(args.verbose),
         )
 
 
@@ -79,6 +79,8 @@ class EnvAction(argparse.Action):
             default = os.environ[env_var]
             if default == "":
                 default = None
+            elif nargs == 0:
+                default = default.lower() not in {"0", "false", "no", "off"}
 
         if default is not None or nargs == 0:
             required = False

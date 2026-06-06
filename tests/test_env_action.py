@@ -87,13 +87,35 @@ def test_env_action_boolean_flag() -> None:
         "--verbose", action=EnvAction, env_var="VERBOSE", nargs=0, help="Verbose mode"
     )
     args = parser.parse_args([])
-    assert args.verbose == "1"
+    assert args.verbose is True
 
     # Test with flag
     args = parser.parse_args(["--verbose"])
     assert args.verbose is True
 
     # Clean up
+    del os.environ["VERBOSE"]
+
+
+def test_env_action_boolean_flag_false_values() -> None:
+    """Test that common false-like env values disable boolean flags."""
+    for value in ["", "0", "false", "no", "off"]:
+        os.environ["VERBOSE"] = value
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "--verbose",
+            action=EnvAction,
+            env_var="VERBOSE",
+            nargs=0,
+            help="Verbose mode",
+        )
+
+        args = parser.parse_args([])
+        if value == "":
+            assert args.verbose is None
+        else:
+            assert args.verbose is False
+
     del os.environ["VERBOSE"]
 
 
