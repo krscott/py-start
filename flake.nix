@@ -46,7 +46,11 @@
           program = pkgs.lib.getExe (
             pkgs.writeShellApplication {
               name = "app";
-              runtimeInputs = [ pythonDev ];
+              runtimeInputs = [
+                pythonDev
+                pkgs.pyright
+                pkgs.just
+              ];
               inherit text;
             }
           );
@@ -79,13 +83,8 @@
         };
 
         apps = {
-          format = mkApp ''
-            ./format.sh
-          '';
-
-          mypy = mkApp ''
-            mypy . "$@"
-          '';
+          format = mkApp "just format";
+          lint = mkApp "just lint";
         };
 
         formatter = pkgs.nixfmt;

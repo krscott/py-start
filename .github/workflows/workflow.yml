@@ -30,8 +30,8 @@ jobs:
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Check Mypy
-      run: nix run -L .#mypy
+    - name: Lint
+      run: nix run -L .#lint
 
     - name: Check Develop Shell
       run: nix develop --command bash -c 'pystart --help'
