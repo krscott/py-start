@@ -38,6 +38,10 @@ done
 echo "Renaming files"
 mv py_start "${proj_underscore}"
 
+echo "Replacing README"
+rm README.md
+mv README_TEMPLATE.md README.md
+
 echo "Deleting init script"
 rm .github/workflows/init-template-test.yml
 rm -- "$0"
