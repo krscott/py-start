@@ -16,6 +16,8 @@ case "$proj" in
 	;;
 esac
 
+cd "$(dirname "$(readlink -f -- "$0")")"
+
 if test -n "$(git status --porcelain)"; then
 	echo "Git is dirty. Commit or stash changes."
 	exit 2
@@ -30,8 +32,6 @@ proj_hyphen=$(echo "$proj" | tr '_' '-')
 proj_underscore=$(echo "$proj" | tr '-' '_')
 
 proj_upper=$(echo "$proj_flat" | tr '[:lower:]' '[:upper:]')
-
-cd "$(dirname "$(readlink -f -- "$0")")"
 
 for file in $(git ls-files | grep -v 'init-template.sh'); do
 	if [ -e "$file" ]; then

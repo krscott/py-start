@@ -36,6 +36,9 @@ jobs:
     - name: Check Develop Shell
       run: nix develop --command bash -c 'pystart --help'
 
+    - name: Test CLI and library
+      run: nix develop --command python -m pytest
+
     - name: Test and Build
       run: nix build -L
 

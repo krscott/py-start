@@ -4,7 +4,7 @@ default:
     just --list
 
 run *args:
-    python -m py_start "$@"
+    pystart "$@"
 
 test *args:
     python -m pytest "$@"
