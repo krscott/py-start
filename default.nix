@@ -1,6 +1,7 @@
 {
   buildPythonPackage,
   lib,
+  pythonOlder,
   pytestCheckHook,
   python-dotenv,
   setproctitle,
@@ -10,6 +11,7 @@ buildPythonPackage {
   name = "py-start";
   src = lib.cleanSource ./.;
   pyproject = true;
+  disabled = pythonOlder "3.12";
 
   nativeBuildInputs = [ setuptools ];
 

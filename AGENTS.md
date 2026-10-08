@@ -4,7 +4,7 @@
 
 | Action | Command |
 |--------|---------|
-| Type check | `python -m pyright` |
+| Type check | `pyright` |
 | Type check | `python -m mypy .` |
 | Run tests | `python -m pytest` |
 
@@ -29,10 +29,11 @@ Don't use `pip install <package>` directly. Instead:
     within a new `nix develop` environment.
 
 **Tools can't find packages installed in venv:**
-  - Running tools directly (e.g., `pytest`, `mypy`, `pyright`) uses Nix environment versions, which can't see venv packages
-  - **Solution: Always use `python -m <tool>`** - this uses the venv's python and sees all venv packages
+  - Running Python tools directly (e.g., `pytest`, `mypy`) uses Nix environment versions, which can't see venv packages
+  - **Solution: Use `python -m <tool>` for Python tools** - this uses the venv's python and sees all venv packages
   - This is especially important after adding new dependencies
-  - Examples: `python -m pytest`, `python -m mypy .`, `python -m pyright`
+  - Examples: `python -m pytest`, `python -m mypy .`
+  - Run `pyright` directly. Nix provides it as a Node program, and it finds packages through `python` on PATH, including the active venv. Do not add the PyPI wrapper to dev dependencies; it downloads pyright from npm outside the Nix lock.
 
 **mypy and type stubs:**
   - For packages without built-in type hints, add stub packages to dev dependencies
@@ -58,7 +59,7 @@ be better to set the error to be ignored in the config.
 ## Code Style
 
 ### Type Hints
-Use modern Python 3.10+ type hints (e.g. `list[str | None]`):
+Use modern Python 3.12+ type hints (e.g. `list[str | None]`). See DESIGN.md for the minimum-version policy.
 
 ### Imports
 Imports go at the top of the file. Don't include within functions unless absolutely necessary.
