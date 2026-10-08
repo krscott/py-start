@@ -62,6 +62,8 @@
           default = pkgs.py-start;
         };
 
+        checks.python-minimum = pkgs.python312.pkgs.callPackage ./default.nix { };
+
         devShells = {
           default = pkgs.mkShell {
             inputsFrom = [ pkgs.py-start ];

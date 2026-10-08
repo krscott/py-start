@@ -14,8 +14,12 @@ For noninteractive commands, use `nix develop -c <command>`, for example:
 nix develop -c python -m pytest
 ```
 
-Run Python tools with `python -m <tool>` so they use the active environment and
-can find its installed packages.
+Run Python tools such as pytest and mypy with `python -m <tool>` so they use the
+active environment and can find its installed packages.
+
+Run `pyright` directly. Nix provides it as a Node program, and it finds packages
+through `python` on PATH, including the active venv. Do not add the PyPI wrapper
+to development dependencies; it downloads pyright from npm outside the Nix lock.
 
 ## Dependencies
 
@@ -36,7 +40,7 @@ affected module in `pyproject.toml`.
 
 | Check | Command |
 |-------|---------|
-| Pyright | `python -m pyright` |
+| Pyright | `pyright` |
 | Mypy | `python -m mypy .` |
 | Tests | `python -m pytest` |
 
@@ -47,7 +51,8 @@ Use pytest fixtures for setup and teardown. Minimize mocks.
 
 ## Code style
 
-- Use Python 3.10+ type hints, such as `list[str | None]`.
+- Use Python 3.12+ type hints, such as `list[str | None]`. See `DESIGN.md` for
+  the minimum-version policy.
 - Keep imports at the top of the file unless a local import is necessary.
 - Prefer returning values over raising exceptions. Make failures actionable.
 - Use `pathlib.Path` instead of `os.path`.
