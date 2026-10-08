@@ -12,7 +12,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+    - uses: cachix/install-nix-action@v31
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Git identity
+      run: |
+        git config user.name "Template test"
+        git config user.email "template-test@example.com"
 
     - name: Check init-template.sh
       run: |
+        initial_commit=$(git rev-parse HEAD)
         ./init-template.sh my-test_app
+        test -z "$(git status --porcelain)"
+        commits=$(git log --format=%s "$initial_commit..HEAD")
+        if [ "$commits" = "Init template" ]; then
+          echo "Flake inputs were already up to date."
+        else
+          test "$commits" = "$(printf 'Update flake inputs\nInit template')"
+          test "$(git diff-tree --no-commit-id --name-only -r HEAD)" = "flake.lock"
+        fi
