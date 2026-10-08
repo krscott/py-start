@@ -60,4 +60,13 @@ rm LICENSE
 if git config user.name >/dev/null; then
 	git add .
 	git commit -m "Init template"
+
+	if command -v nix >/dev/null 2>&1; then
+		echo "Updating flake inputs"
+		nix flake update
+		git add flake.lock
+		if ! git diff --cached --quiet -- flake.lock; then
+			git commit -m "Update flake inputs"
+		fi
+	fi
 fi
