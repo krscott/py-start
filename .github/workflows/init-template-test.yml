@@ -30,3 +30,10 @@ jobs:
           test "$commits" = "$(printf 'Update flake inputs\nInit template')"
           test "$(git diff-tree --no-commit-id --name-only -r HEAD)" = "flake.lock"
         fi
+
+    - uses: cachix/install-nix-action@v31
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Test generated Nix package and renamed CLI
+      run: nix flake check -L

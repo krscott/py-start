@@ -42,7 +42,7 @@ jobs:
     - name: Test and Build
       run: nix build -L
 
-    - name: Test minimum Python
+    - name: Test minimum Python and installed Nix CLI
       run: nix flake check -L
 
     - name: Check nix

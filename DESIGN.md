@@ -61,3 +61,28 @@ Runtime dependency floors match the minor versions tested by the locked nixpkgs.
 Development tools come from Nix. Keep mypy unpinned in the dev extras so pip can
 reuse Nix's version. Run Nix's Node-based `pyright` directly rather than installing
 the PyPI wrapper, which downloads an npm package outside the Nix lock.
+
+## Nix-packaged command
+
+The installed `pystart` command MUST use its packaged dependencies even when the
+caller exports conflicting Python import settings. `default.nix` adds `-I` to
+the entry point shebang in `postInstall`, before Nix's Python fixup inserts the
+packaged dependency paths. Isolated mode ignores Python environment settings,
+user site-packages, and the script directory for imports. It does not remove
+environment variables from the process or its subprocesses.
+
+Application settings such as `PYSTART_VERBOSE` and `.env` loading from the
+working directory MUST continue to work. Development shells, editable installs,
+and library imports MUST continue to use the active Python environment.
+Projects that need `PYTHONPATH` for user plugins MAY remove the isolation hook
+and adapt the packaged-command tests.
+
+`tests/test_nix_cli.py` invokes the executable specified by
+`PYSTART_NIX_EXECUTABLE`, never a command found through `PATH`. It checks
+conflicting `dotenv` and `sitecustomize` modules, invalid `PYTHONHOME`, and
+application settings including environment precedence over `.env`. The tests
+skip when no packaged executable is specified. `checks.nix-cli` supplies the
+installed Nix package path and runs these tests through `nix flake check` in CI.
+The template initialization workflow also runs the flake checks after renaming
+the project, so the isolation hook and tests MUST follow the generated command
+and environment variable names.

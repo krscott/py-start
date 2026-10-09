@@ -20,6 +20,11 @@ buildPythonPackage {
     setproctitle
   ];
 
+  # Isolate the CLI before Python fixup adds the packaged dependency paths.
+  postInstall = ''
+    sed -i '1s/$/ -I/' "$out/bin/pystart"
+  '';
+
   nativeCheckInputs = [
     pytestCheckHook
   ];
