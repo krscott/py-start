@@ -62,7 +62,19 @@
           default = pkgs.py-start;
         };
 
-        checks.python-minimum = pkgs.python312.pkgs.callPackage ./default.nix { };
+        checks = {
+          python-minimum = pkgs.python312.pkgs.callPackage ./default.nix { };
+          nix-cli =
+            pkgs.runCommand "py-start-nix-cli-tests"
+              {
+                nativeBuildInputs = [ (pkgs.python3.withPackages (ps: [ ps.pytest ])) ];
+                PYSTART_NIX_EXECUTABLE = "${pkgs.py-start}/bin/pystart";
+              }
+              ''
+                python -m pytest -c ${./pyproject.toml} ${./tests/test_nix_cli.py}
+                touch "$out"
+              '';
+        };
 
         devShells = {
           default = pkgs.mkShell {
