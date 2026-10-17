@@ -58,9 +58,18 @@ Mypy and pyright target the minimum version to check standard-library use.
 Pyright also checks syntax compatibility, including syntax mypy may miss.
 
 Runtime dependency floors match the minor versions tested by the locked nixpkgs.
-Development tools come from Nix. Keep mypy unpinned in the dev extras so pip can
-reuse Nix's version. Run Nix's Node-based `pyright` directly rather than installing
-the PyPI wrapper, which downloads an npm package outside the Nix lock.
+The Nix shell supplies development tools. Keep mypy unpinned in the dev extras
+to match Nix's version. Run `pyright` directly: Nix supplies the Node program
+in its shell, while manual pip installs supply the Python wrapper through the
+dev extra. The wrapper may download Node and pyright on first use. Nix is
+optional for development; the justfile's Nix formatting step skips when absent.
+
+The development shell creates a separate `.venv` for each checkout. Nix supplies
+runtime dependencies, development tools, and setuptools. The creation hook runs
+`python -m pip install --no-deps --no-build-isolation -e .` to install only the
+local project. New worktrees reuse dependencies from the Nix store without pip
+resolving packages or creating an isolated build environment. CI creates the
+development environment with `PIP_NO_INDEX=1`, including after template renaming.
 
 ## Nix-packaged command
 

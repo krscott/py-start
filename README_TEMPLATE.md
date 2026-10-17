@@ -23,7 +23,31 @@ Start nix dev shell
 nix develop
 ```
 
-NOTE: If you rename scripts in pyproject.toml, you may need to delete and recreate .venv
+Nix supplies runtime and development dependencies. On first use, the shell
+creates a separate `.venv` for the checkout and installs only the local project
+in editable mode, without resolving or downloading Python packages.
+
+Declare Python dependencies in `pyproject.toml` and the corresponding Nix
+packages in `default.nix` (runtime) or `flake.nix` (development tools). Exit and
+re-enter `nix develop` after changing Nix dependencies. To refresh package
+metadata or script entry points in an existing virtual environment, run:
+
+```sh
+python -m pip install --no-deps --no-build-isolation -e .
+```
+
+Nix is optional. For manual setup, install Python 3.12 or newer and Just, then:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e '.[dev]'
+just check
+```
+
+The dev extra includes the Python pyright wrapper, which provides the `pyright`
+command and may download Node and pyright on first use. `just format` skips Nix
+formatting when Nix is absent and shell formatting when shfmt is absent.
 
 ## Nix command isolation
 
