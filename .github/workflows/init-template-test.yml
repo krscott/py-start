@@ -37,3 +37,8 @@ jobs:
 
     - name: Test generated Nix package and renamed CLI
       run: nix flake check -L
+
+    - name: Check generated development shell
+      env:
+        PIP_NO_INDEX: "1"
+      run: nix develop -c mytestapp --help

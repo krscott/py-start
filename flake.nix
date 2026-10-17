@@ -87,7 +87,8 @@
             packages = [ pkgs.python3.pkgs.venvShellHook ];
             venvDir = ".venv";
             postVenvCreation = ''
-              pip install -e '.[dev]'
+              # Nix supplies dependencies and setuptools; only install this worktree's code.
+              python -m pip install --no-deps --no-build-isolation -e .
             '';
             shellHook = ''
               runHook venvShellHook
