@@ -36,6 +36,19 @@ metadata or script entry points in an existing virtual environment, run:
 python -m pip install --no-deps --no-build-isolation -e .
 ```
 
+Nix is optional. For manual setup, install Python 3.12 or newer and Just, then:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e '.[dev]'
+just check
+```
+
+The dev extra includes the Python pyright wrapper, which provides the `pyright`
+command and may download Node and pyright on first use. `just format` skips Nix
+formatting when Nix is absent and shell formatting when shfmt is absent.
+
 ## Nix command isolation
 
 The command built by `nix build` runs Python in [isolated mode (`-I`)](https://docs.python.org/3/using/cmdline.html#cmdoption-I).
