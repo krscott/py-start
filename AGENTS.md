@@ -83,36 +83,9 @@ When raising the minimum, update these together:
 - The manual setup instructions in the project README (`README_TEMPLATE.md`
   until the template is initialized).
 
-Black's target controls the syntax it writes; it does not check compatibility.
-Mypy and pyright target the minimum version to check standard-library use.
-Pyright also checks syntax compatibility, including syntax mypy can miss.
-
-`nix build` runs unit tests on nixpkgs' default Python, and `checks.python-minimum`
-runs them on the minimum version. That catches runtime differences, such as eager
-annotation evaluation, that type checking alone does not detect.
-
-Runtime dependency floors match the minor versions tested by the locked nixpkgs.
-Keep mypy unpinned in the dev extras to match Nix's version.
+The README's "Python compatibility" section explains how these settings are used.
 
 ## Nix-packaged command
 
-`default.nix` adds `-I` to the `pystart` entry point so the installed command
-uses its packaged dependencies even when the caller exports conflicting Python
-import settings. It does this in `postInstall`, before Nix's Python fixup inserts
-the packaged dependency paths. Isolated mode ignores Python environment settings,
-user site-packages, and the script directory for imports. Environment variables
-stay available to the process and its subprocesses.
-
-Application settings such as `PYSTART_VERBOSE` and `.env` loading from the working
-directory have to keep working, and development shells, editable installs, and
-library imports have to keep using the active Python environment. Projects that
-need `PYTHONPATH` for user plugins can remove the isolation hook and adapt the
-packaged-command tests.
-
-`tests/test_nix_cli.py` invokes the executable named by `PYSTART_NIX_EXECUTABLE`,
-never a command found through `PATH`, and skips when the variable is unset. It
-checks conflicting `dotenv` and `sitecustomize` modules, invalid `PYTHONHOME`, and
-application settings, including environment precedence over `.env`.
-`checks.nix-cli` supplies the installed package path, so `nix flake check` runs
-these tests. Template initialization renames the command and variable names in
-the hook and tests, and its CI workflow runs the flake checks on the result.
+The `-I` added to the `pystart` entry point in `default.nix` is deliberate. See
+"Nix command isolation" in the project README before changing it.

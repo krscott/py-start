@@ -49,6 +49,19 @@ The dev extra includes the Python pyright wrapper, which provides the `pyright`
 command and may download Node and pyright on first use. `just format` skips Nix
 formatting when Nix is absent and shell formatting when shfmt is absent.
 
+## Python compatibility
+
+Black's target controls the syntax it writes; it does not check compatibility.
+Mypy and pyright target the minimum version to check standard-library use.
+Pyright also checks syntax compatibility, including syntax mypy can miss.
+
+`nix build` runs unit tests on nixpkgs' default Python, and `checks.python-minimum`
+runs them on the minimum version. That catches runtime differences, such as eager
+annotation evaluation, that type checking alone does not detect.
+
+Runtime dependency floors match the minor versions tested by the locked nixpkgs.
+Keep mypy unpinned in the dev extras to match Nix's version.
+
 ## Nix command isolation
 
 The command built by `nix build` runs Python in [isolated mode (`-I`)](https://docs.python.org/3/using/cmdline.html#cmdoption-I).
@@ -62,8 +75,8 @@ environment. For plugins deliberately loaded through `PYTHONPATH`, remove the
 `postInstall` block that adds `-I` in `default.nix` and adapt
 `tests/test_nix_cli.py` to the intended plugin behavior.
 
-`nix flake check` tests the installed command with conflicting Python settings.
-To run those tests directly after `nix build`:
+`nix flake check` tests the installed command with conflicting Python settings
+through `checks.nix-cli`. To run those tests directly after `nix build`:
 
 ```sh
 nix develop -c env PYSTART_NIX_EXECUTABLE="$PWD/result/bin/pystart" python -m pytest tests/test_nix_cli.py
