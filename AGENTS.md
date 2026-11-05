@@ -9,6 +9,7 @@ development dependencies, including setuptools. Its hooks create `.venv` if
 missing, activate it, and install only the local project in editable mode,
 without resolving or downloading Python packages. Each worktree has its own
 editable installation. Agents can run this themselves; no user restart is needed.
+CI sets `PIP_NO_INDEX=1` when creating the environment to enforce this.
 
 For noninteractive commands, use `nix develop -c <command>`, for example:
 
@@ -57,15 +58,34 @@ Use pytest fixtures for setup and teardown. Minimize mocks.
 
 ## Code style
 
-- Use Python 3.12+ type hints, such as `list[str | None]`. See `DESIGN.md` for
-  the minimum-version policy.
+- Use Python 3.12+ type hints, such as `list[str | None]`. See
+  [Python compatibility](#python-compatibility) for the minimum-version policy.
 - Keep imports at the top of the file unless a local import is necessary.
 - Prefer returning values over raising exceptions. Make failures actionable.
 - Use `pathlib.Path` instead of `os.path`.
 - Prefer composition over inheritance and keep data easy to inspect, test,
   and serialize.
 
-## Design documentation
+## Python compatibility
 
-Keep `DESIGN.md` current with application requirements and architecture. It
-should contain enough detail for an agent to reproduce the application.
+The minimum Python version is 3.12. Choose the oldest interpreter in the locked
+nixpkgs whose package set works for both runtime and development dependencies.
+An interpreter being present in nixpkgs is not enough.
+
+When raising the minimum, update these together:
+
+- `requires-python` in `pyproject.toml`.
+- Black's `target-version`, mypy's `python_version`, and pyright's
+  `pythonVersion` in `pyproject.toml`.
+- The `pythonOlder` guard in `default.nix`, which rejects unsupported interpreters.
+- The interpreter used by `checks.python-minimum` in `flake.nix`.
+- The version in this file, in this section and under Code style.
+- The manual setup instructions in the project README (`README_TEMPLATE.md`
+  until the template is initialized).
+
+The README's "Python compatibility" section explains how these settings are used.
+
+## Nix-packaged command
+
+The `-I` added to the `pystart` entry point in `default.nix` is deliberate. See
+"Nix command isolation" in the project README before changing it.
