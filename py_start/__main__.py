@@ -31,7 +31,7 @@ class CliOpts:
 
     @staticmethod
     def parse_args() -> "CliOpts":
-        parser = argparse.ArgumentParser()
+        parser = argparse.ArgumentParser(allow_abbrev=False)
 
         # App options
         parser.add_argument("name", nargs="?", default="World", help="Your name")
